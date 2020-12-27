@@ -12,7 +12,7 @@ f = Function('f', IntSort(), IntSort(), IntSort())
 # multiplication
 g = Function('g', IntSort(), IntSort(), IntSort())
 # addition inverse
-n = Function('n', IntSort(), IntSort())
+i = Function('i', IntSort(), IntSort())
 
 ground_term = [one, zero, c]
 
