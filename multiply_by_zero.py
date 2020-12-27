@@ -1,6 +1,16 @@
 from z3 import *
 from itertools import permutations, product
 from copy import deepcopy
+import argparse
+
+
+parser = argparse.ArgumentParser(description='Instantiation with certain depth')
+parser.add_argument('--depth', dest='depth',
+                    default=2,
+                    help='depth for instantiation')
+depth = int(parser.parse_args().depth)
+
+
 
 s = Solver()
 
@@ -26,21 +36,16 @@ for c1, c2 in product(ground_terms, repeat=2):
     depth_one_terms.append(f(c1, c2))
     depth_one_terms.append(g(c1, c2))
 
-depth_two_terms = deepcopy(depth_one_terms)
-for constant in depth_one_terms:
-    depth_two_terms.append(i(constant))
-for c1, c2 in product(depth_one_terms, repeat=2):
-    depth_two_terms.append(f(c1, c2))
-    depth_two_terms.append(g(c1, c2))
+depth_two_terms = depth_one_terms + [i(g(zero, d))]
 
-
+print("-- Checking for instantiation with depth {}".format(depth))
 
 s.add(Or(
     g(zero, d) != zero,
     g(d, zero) != zero
 ))
 
-selected_terms = depth_two_terms
+selected_terms = [ground_terms, depth_one_terms, depth_two_terms][depth]
 
 for x,y,z in product(selected_terms, repeat=3):
     s.add(
@@ -72,4 +77,3 @@ for x in selected_terms:
     ))
 
 print(s.check())
-print(s.model())
